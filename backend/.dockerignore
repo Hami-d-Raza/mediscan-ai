@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment files
+.env
+*.env
+
+# Training data (too large, not needed at runtime)
+data/
+
+# Training scripts (not needed at runtime)
+train_mri.py
+test_glioma.py
+train_colab.ipynb
+
+# Logs
+uvicorn_out.txt
+uvicorn_err.txt
+
+# Uploads (runtime-generated, not needed in image)
+uploads/
+
+# Git
+.git/
+.gitignore
+
+# Temp / OS
+*.DS_Store
+Thumbs.db
