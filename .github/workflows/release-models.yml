@@ -1,0 +1,83 @@
+name: Create Model Release
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Run this workflow ONCE (manually) after training to publish the model
+# weights as a GitHub Release so the Docker build can download them.
+#
+# Prerequisites
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. Push your repo to GitHub (public).
+# 2. Add the two .pt files as secrets or upload from a URL.
+#    The easiest local approach is to use the GitHub CLI directly:
+#
+#      gh release create v1.0.1 \
+#          backend/models/mri_classifier.pt \
+#          backend/models/multi_cancer_classifier.pt \
+#          backend/models/class_labels.json \
+#          --title "v1.0.1 – Model weights" \
+#          --notes "Initial model release"
+#
+# Alternatively, trigger this workflow, which downloads models from URLs you
+# supply as inputs and creates (or re-creates) the release.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      mri_model_url:
+        description: "Direct download URL for mri_classifier.pt"
+        required: true
+        type: string
+      multi_cancer_url:
+        description: "Direct download URL for multi_cancer_classifier.pt"
+        required: true
+        type: string
+      tag:
+        description: "Release tag (default: v1.0.1)"
+        required: false
+        default: "v1.0.1"
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to create releases
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download model weights
+        run: |
+          mkdir -p backend/models
+          echo "Downloading mri_classifier.pt …"
+          curl -L -o backend/models/mri_classifier.pt \
+               --fail --retry 3 --retry-delay 5 \
+               "${{ github.event.inputs.mri_model_url }}"
+
+          echo "Downloading multi_cancer_classifier.pt …"
+          curl -L -o backend/models/multi_cancer_classifier.pt \
+               --fail --retry 3 --retry-delay 5 \
+               "${{ github.event.inputs.multi_cancer_url }}"
+
+          echo "File sizes:"
+          ls -lh backend/models/*.pt
+
+      - name: Delete existing release (if any)
+        run: |
+          gh release delete "${{ github.event.inputs.tag }}" --yes 2>/dev/null || true
+          git push --delete origin "${{ github.event.inputs.tag }}" 2>/dev/null || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release and attach assets
+        run: |
+          gh release create "${{ github.event.inputs.tag }}" \
+              backend/models/mri_classifier.pt \
+              backend/models/multi_cancer_classifier.pt \
+              backend/models/class_labels.json \
+              --title "${{ github.event.inputs.tag }} – Model weights" \
+              --notes "Pre-trained weights for MediScan AI (CPU build)."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

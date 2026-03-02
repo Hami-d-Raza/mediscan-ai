@@ -31,7 +31,10 @@ RUN pip install --no-cache-dir -r requirements.prod.txt
 COPY app/ ./app/
 COPY run.py .
 
-# ── 4. Download model weights from GitHub Releases (not stored in git)
+# ── 4a. Copy label map (tracked in git, not a large binary)
+COPY models/class_labels.json ./models/class_labels.json
+
+# ── 4b. Download model weights from GitHub Releases (not stored in git)
 COPY download_models.py .
 RUN python download_models.py
 
