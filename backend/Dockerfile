@@ -32,13 +32,8 @@ COPY app/ ./app/
 COPY run.py .
 
 # ── 4. Download model weights from GitHub Releases (not stored in git)
-RUN mkdir -p models && \
-    python -c "\
-import urllib.request; \
-urllib.request.urlretrieve('https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.1/mri_classifier.pt', 'models/mri_classifier.pt'); \
-urllib.request.urlretrieve('https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.1/multi_cancer_classifier.pt', 'models/multi_cancer_classifier.pt'); \
-print('Models downloaded successfully') \
-"
+COPY download_models.py .
+RUN python download_models.py
 
 # ── 5. Create uploads directory
 RUN mkdir -p uploads
