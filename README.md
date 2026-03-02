@@ -36,6 +36,23 @@ An AI-powered medical research platform combining **three distinct AI pipelines*
 
 ---
 
+## Model Weights
+
+The `.pt` model files are **not included in the repository** (too large for git). Download them from the GitHub Release and place them in `backend/models/`:
+
+| File | Description | Download |
+|------|-------------|----------|
+| `mri_classifier.pt` | 4-class Brain MRI CNN | [v1.0.0 Release](https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.0/mri_classifier.pt) |
+| `multi_cancer_classifier.pt` | 26-class MobileNetV2 histopathology model | [v1.0.0 Release](https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.0/multi_cancer_classifier.pt) |
+
+```bash
+# After downloading, place both files here:
+backend/models/mri_classifier.pt
+backend/models/multi_cancer_classifier.pt
+```
+
+---
+
 ## Project Structure
 
 ```
