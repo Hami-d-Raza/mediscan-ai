@@ -6,6 +6,23 @@ An AI-powered medical research platform combining **three distinct AI pipelines*
 
 ---
 
+## 🌐 Live Deployment
+
+| Service | URL |
+|---------|-----|
+| **Frontend** | https://mediscanai.me |
+| **Backend API** | https://mediscan-api-dqcxaaaxc6aqccgd.southeastasia-01.azurewebsites.net |
+| **API Health** | https://mediscan-api-dqcxaaaxc6aqccgd.southeastasia-01.azurewebsites.net/health |
+| **API Docs** | https://mediscan-api-dqcxaaaxc6aqccgd.southeastasia-01.azurewebsites.net/docs |
+
+**Infrastructure:**
+- Frontend hosted on **Vercel** with custom domain `mediscanai.me`
+- Backend hosted on **Azure App Service** (B2 Linux container)
+- Container image stored in **Azure Container Registry** (`hamimediscan`)
+- CI/CD via **GitHub Actions** — every push to `main` rebuilds and redeploys automatically
+
+---
+
 ## AI Pipelines at a Glance
 
 | Pipeline | Model | Training Data | Classes |
@@ -42,8 +59,8 @@ The `.pt` model files are **not included in the repository** (too large for git)
 
 | File | Description | Download |
 |------|-------------|----------|
-| `mri_classifier.pt` | 4-class Brain MRI CNN | [v1.0.0 Release](https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.0/mri_classifier.pt) |
-| `multi_cancer_classifier.pt` | 26-class MobileNetV2 histopathology model | [v1.0.0 Release](https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.0/multi_cancer_classifier.pt) |
+| `mri_classifier.pt` | 4-class Brain MRI CNN | [v1.0.1 Release](https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.1/mri_classifier.pt) |
+| `multi_cancer_classifier.pt` | 26-class MobileNetV2 histopathology model | [v1.0.1 Release](https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.1/multi_cancer_classifier.pt) |
 
 ```bash
 # After downloading, place both files here:
