@@ -36,6 +36,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "http://localhost:5500",
         "http://127.0.0.1:5500",
+        # Production — Azure backend self-reference
+        "https://mediscan-api-dqcxaaaxc6aqccgd.southeastasia-01.azurewebsites.net",
         # Production — Vercel + custom domain
         "https://mediscanai.me",
         "https://www.mediscanai.me",
