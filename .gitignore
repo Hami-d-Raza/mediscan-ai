@@ -1,0 +1,54 @@
+# ── Python ────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.log
+
+# ── Environment variables ─────────────────────────────────
+.env
+backend/.env
+frontend/.env
+# (keep .env.example — it is safe to commit)
+
+# ── ML Model weights ──────────────────────────────────────
+# Large binary files — distribute via GitHub Releases or
+# share the Kaggle/Colab notebook link instead.
+backend/models/*.pt
+backend/models/*.pth
+backend/models/*.bin
+
+# ── Training data ─────────────────────────────────────────
+# Datasets are large — download from Kaggle (see README).
+backend/data/
+
+# ── Upload temp directories ───────────────────────────────
+uploads/
+backend/uploads/
+
+# ── Node / Vite ───────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ── OS & editor ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+*.swp
+*.swo
+
+# ── Jupyter checkpoints ───────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Uvicorn / Vite server logs ────────────────────────────
+backend/uvicorn_out.txt
+backend/uvicorn_err.txt
+frontend/vite_out.txt
+frontend/vite_err.txt

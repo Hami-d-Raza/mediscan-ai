@@ -1,0 +1,39 @@
+# ============================================================
+# MediScan AI — Backend Dependencies
+# ============================================================
+
+# --- Web Framework -----------------------------------------------------------
+fastapi==0.115.0
+uvicorn[standard]==0.30.1
+
+# --- Settings & Validation ---------------------------------------------------
+pydantic==2.7.1
+pydantic-settings==2.3.4
+pydantic[email]                  # EmailStr support
+
+# --- Authentication ----------------------------------------------------------
+python-jose[cryptography]==3.3.0  # JWT token creation & validation
+passlib[bcrypt]==1.7.4            # Password hashing
+
+# --- File Handling -----------------------------------------------------------
+python-multipart==0.0.9           # Required for UploadFile in FastAPI
+PyPDF2==3.0.1                     # PDF text extraction (NLP module)
+Pillow==10.3.0                    # Image loading (CV module)
+
+# --- NLP / Transformers ------------------------------------------------------
+transformers==4.41.0
+sentencepiece==0.2.0
+# torch is also listed under Computer Vision below (shared dependency)
+
+# --- Computer Vision --------------------------------------------------------
+torch==2.3.0
+torchvision==0.18.0
+# opencv-python==4.9.0.80   # uncomment if you need OpenCV preprocessing
+
+# --- Utilities ---------------------------------------------------------------
+python-dotenv==1.0.1              # .env file loading
+
+# --- Training-only (not required by the server) ------------------------------
+tqdm                              # progress bars in train_mri.py
+scikit-learn                      # classification report & confusion matrix
+matplotlib                        # training curve plots
