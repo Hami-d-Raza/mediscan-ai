@@ -38,10 +38,18 @@ COPY models/class_labels.json ./models/class_labels.json
 COPY download_models.py .
 RUN python download_models.py
 
-# ── 5. Create uploads directory
+# ── 5. Pre-download HuggingFace NLP model so first request isn't slow
+#       and Azure startup timeout (230 s) isn't exceeded.
+RUN python -c "\
+from transformers import pipeline, logging as hf_logging; \
+hf_logging.set_verbosity_error(); \
+pipeline('ner', model='d4data/biomedical-ner-all', aggregation_strategy='simple'); \
+print('NLP model cached.')"
+
+# ── 6. Create uploads directory
 RUN mkdir -p uploads
 
-# ── 6. Expose port and start server
+# ── 7. Expose port and start server
 EXPOSE 8000
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
