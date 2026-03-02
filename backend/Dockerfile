@@ -31,8 +31,14 @@ RUN pip install --no-cache-dir -r requirements.prod.txt
 COPY app/ ./app/
 COPY run.py .
 
-# ── 4. Copy model weights (pre-downloaded into backend/models/ before build)
-COPY models/ ./models/
+# ── 4. Download model weights from GitHub Releases (not stored in git)
+RUN mkdir -p models && \
+    apt-get update && apt-get install -y --no-install-recommends wget && \
+    wget -q -O models/mri_classifier.pt \
+        https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.0/mri_classifier.pt && \
+    wget -q -O models/multi_cancer_classifier.pt \
+        https://github.com/Hami-d-Raza/mediscan-ai/releases/download/v1.0.0/multi_cancer_classifier.pt && \
+    rm -rf /var/lib/apt/lists/*
 
 # ── 5. Create uploads directory
 RUN mkdir -p uploads
