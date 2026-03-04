@@ -92,9 +92,11 @@ FYP/
 │   │   │   ├── report.py
 │   │   │   └── vision.py
 │   │   ├── services/              # Business logic (decoupled from routes)
-│   │   │   ├── image_model.py     # MobileNetV2 inference wrapper
-│   │   │   ├── mri_model.py       # Brain MRI CNN inference wrapper
-│   │   │   ├── nlp_model.py       # HuggingFace BioBERT NER pipeline
+│   │   │   ├── image_model.py      # MobileNetV2 inference wrapper (confidence thresholds)
+│   │   │   ├── mri_model.py        # Brain MRI CNN inference wrapper (confidence thresholds)
+│   │   │   ├── medical_classifier.py  # Binary medical/non-medical image detector
+│   │   │   ├── evaluation.py       # ML evaluation metrics (accuracy, F1, confusion matrix)
+│   │   │   ├── nlp_model.py        # HuggingFace BioBERT NER pipeline
 │   │   │   ├── nlp_service.py
 │   │   │   ├── auth_service.py
 │   │   │   └── vision_service.py
@@ -135,8 +137,8 @@ FYP/
 │   └── package.json
 │
 ├── uploads/                       # Root-level upload fallback (git-ignored)
-├── train_colab.ipynb              # Google Colab training notebook
-├── test_report.txt                # Sample report for testing NLP pipeline
+├── train_colab.ipynb              # Google Colab training notebook (multi-cancer)
+├── train_medical_classifier.ipynb # Colab notebook — binary medical image classifier
 └── README.md
 ```
 
@@ -294,14 +296,18 @@ curl -X POST http://localhost:8000/analyze-image \
 Response:
 ```json
 {
-  "filename":    "histology_slide.jpg",
-  "prediction":  "brain_glioma",
-  "cancer_type": "Brain Cancer",
-  "confidence":  0.91,
-  "class_index": 4,
-  "simulated":   false
+  "filename":            "histology_slide.jpg",
+  "prediction":          "brain_glioma",
+  "cancer_type":         "Brain Cancer",
+  "confidence":          0.91,
+  "class_index":         4,
+  "simulated":           false,
+  "valid_medical_image": true,
+  "warning":             ""
 }
 ```
+
+> If the uploaded image does not appear to be a medical scan, `valid_medical_image` will be `false` and `warning` will contain a human-readable message.
 
 ### Example — Analyze Brain MRI (4-class)
 
@@ -313,13 +319,15 @@ curl -X POST http://localhost:8000/analyze-brain-mri \
 Response:
 ```json
 {
-  "filename":    "brain_scan.jpg",
-  "prediction":  "glioma",
-  "cancer_type": "Brain Cancer",
-  "confidence":  0.94,
-  "class_index": 0,
-  "description": "Glioma is a type of malignant brain tumour arising from glial cells.",
-  "simulated":   false
+  "filename":            "brain_scan.jpg",
+  "prediction":          "glioma",
+  "cancer_type":         "Brain Cancer",
+  "confidence":          0.94,
+  "class_index":         0,
+  "description":         "Glioma is a type of malignant brain tumour arising from glial cells.",
+  "simulated":           false,
+  "valid_medical_image": true,
+  "warning":             ""
 }
 ```
 
@@ -417,6 +425,57 @@ Response:
 | `/contact` | Contact | Contact form with info cards |
 
 The **Analyze** page includes a **dual-model toggle** in the image upload card: users can switch between the 26-class multi-cancer classifier and the 4-class brain MRI classifier without leaving the page.
+
+---
+
+## Changelog
+
+### 2026-03-04
+
+#### Backend
+
+- **Binary Medical Image Classifier** (`services/medical_classifier.py`)  
+  New service that validates every uploaded image before running cancer inference.  
+  - **Tier 1** — Fine-tuned EfficientNet-B0 binary classifier (Medical vs Non-Medical); loaded from `settings.MEDICAL_CLASSIFIER_PATH` when available.  
+  - **Tier 2 fallback** — CLIP zero-shot classifier (`openai/clip-vit-base-patch32`) via HuggingFace `transformers`; runs entirely on CPU, no external API.  
+  - Returns `(is_medical: bool, score: float, hint_msg: str)` — never hard-rejects, only warns.
+
+- **Confidence & Uncertainty Thresholds** (`services/image_model.py`, `services/mri_model.py`)  
+  Predictions are now flagged as *"Uncertain"* when:
+  - `max(softmax) < 0.75` (confidence threshold), or
+  - `top-1 probability − top-2 probability < 0.10` (top-2 gap threshold).  
+  Both thresholds are tunable constants at the top of each service file.
+
+- **API Response Fields Extended** (`routes/image.py`, `routes/mri.py`)  
+  Both `/analyze-image` and `/analyze-brain-mri` now return two additional fields:
+  - `valid_medical_image` (`bool`) — result of the binary image validation check.
+  - `warning` (`str`) — human-readable warning when validation fails or prediction is uncertain.
+
+- **Evaluation Utilities** (`services/evaluation.py`)  
+  New module wrapping `scikit-learn` to compute `accuracy`, `precision`, `recall`, `F1-score` (macro and per-class), and `confusion_matrix`. Exposes `compute_metrics()` and `evaluate_model()` helpers for offline model evaluation.
+
+- **Config & Environment** (`app/config.py`, `.env.example`)  
+  Added `MEDICAL_CLASSIFIER_PATH` setting for the new binary classifier weights.
+
+- **Dependencies** (`requirements.txt`)  
+  Added `scikit-learn` for the evaluation utilities.
+
+- **Cleanup** — Removed development test files (`test_glioma.py`, project-root `test_report.txt`).
+
+#### Frontend
+
+- **ImageUpload component** (`src/components/ImageUpload.jsx`) — Major overhaul:  
+  - Displays `valid_medical_image` warning banner when backend flags a non-medical image.  
+  - Shows an *"Uncertain prediction"* notice when model confidence is low.  
+  - Additional UI polish and layout improvements.
+
+- **App.css** — ~170 lines of new styles supporting the updated ImageUpload card, warning banners, and confidence indicators.
+
+- **`frontend/public/`** — Static public assets directory added.
+
+#### Notebooks
+
+- **`train_medical_classifier.ipynb`** — New Google Colab notebook for training the binary Medical / Non-Medical EfficientNet-B0 classifier.
 
 ---
 

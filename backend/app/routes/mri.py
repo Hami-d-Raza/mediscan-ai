@@ -78,11 +78,13 @@ async def analyze_brain_mri(file: UploadFile = File(...)):
         _delete_temp_file(saved_path)
 
     return {
-        "filename":    file.filename,
-        "prediction":  result["prediction"],
-        "cancer_type": result["cancer_type"],
-        "confidence":  result["confidence"],
-        "class_index": result["class_index"],
-        "simulated":   result["simulated"],
-        "description": result["description"],
+        "filename":           file.filename,
+        "prediction":         result["prediction"],
+        "cancer_type":        result["cancer_type"],
+        "confidence":         result["confidence"],
+        "class_index":        result["class_index"],
+        "simulated":          result["simulated"],
+        "description":        result["description"],
+        "valid_medical_image": result.get("valid_medical_image", True),
+        "warning":            result.get("warning", ""),
     }

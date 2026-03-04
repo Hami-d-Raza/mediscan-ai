@@ -66,6 +66,18 @@ class Settings(BaseSettings):
     CV_MODEL_PATH: str   = str(_BACKEND_DIR / "models" / "multi_cancer_classifier.pt")
     CV_LABELS_PATH: str  = str(_BACKEND_DIR / "models" / "class_labels.json")
     MRI_MODEL_PATH: str  = str(_BACKEND_DIR / "models" / "mri_classifier.pt")
+    # Binary classifier: medical (MRI/histo) vs non-medical images.
+    # Train offline and place the weights here.  Without this file the
+    # system uses the HuggingFace API fallback (Tier-2).
+    MEDICAL_CLASSIFIER_PATH: str = str(_BACKEND_DIR / "models" / "medical_classifier.pt")
+
+    # -----------------------------------------------------------------------
+    # HuggingFace Inference API — Tier-2 medical/non-medical fallback
+    # Get a free token at https://huggingface.co/settings/tokens
+    # Leave blank to skip the API check (neutral score 0.5 used instead).
+    # -----------------------------------------------------------------------
+    HF_API_TOKEN: str = ""
+    HF_MEDICAL_MODEL: str = "openai/clip-vit-base-patch32"
 
     class Config:
         env_file = ".env"

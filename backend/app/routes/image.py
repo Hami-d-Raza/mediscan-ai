@@ -141,10 +141,12 @@ async def analyze_image(file: UploadFile = File(...)):
     # 5. Return real model output
     # -----------------------------------------------------------------------
     return {
-        "filename":    file.filename,
-        "prediction":  result["prediction"],
-        "cancer_type": result["cancer_type"],
-        "confidence":  result["confidence"],
-        "class_index": result["class_index"],
-        "simulated":   result["simulated"],
+        "filename":           file.filename,
+        "prediction":         result["prediction"],
+        "cancer_type":        result["cancer_type"],
+        "confidence":         result["confidence"],
+        "class_index":        result["class_index"],
+        "simulated":          result["simulated"],
+        "valid_medical_image": result.get("valid_medical_image", True),
+        "warning":            result.get("warning", ""),
     }

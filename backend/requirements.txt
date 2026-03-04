@@ -28,6 +28,7 @@ sentencepiece==0.2.0
 # --- Computer Vision --------------------------------------------------------
 torch==2.3.0
 torchvision==0.18.0
+requests>=2.31.0              # HuggingFace API calls (Tier-2 fallback)
 # opencv-python==4.9.0.80   # uncomment if you need OpenCV preprocessing
 
 # --- Utilities ---------------------------------------------------------------
