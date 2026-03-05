@@ -240,6 +240,9 @@ def is_medical_image(
     Tries Tier-1 (fine-tuned binary classifier) first; falls back to
     Tier-2 (local CLIP zero-shot pipeline) when Tier-1 weights are absent.
 
+    Disabled entirely when settings.ENABLE_MEDICAL_VALIDATION is False
+    (default in production) — returns a neutral pass-through score of 1.0.
+
     Args:
         image_path : Path to the image file (used for logging).
         img        : Pre-loaded PIL Image (optional).
@@ -253,6 +256,11 @@ def is_medical_image(
     Raises:
         ValueError : If the image cannot be opened.
     """
+    # Short-circuit: validation disabled in production
+    if not settings.ENABLE_MEDICAL_VALIDATION:
+        logger.debug("Medical validation disabled (ENABLE_MEDICAL_VALIDATION=False) — pass-through.")
+        return True, 1.0, ""
+
     # Load image if not supplied
     if img is None:
         try:

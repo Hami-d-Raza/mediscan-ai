@@ -112,7 +112,7 @@ export default function Layout({ children }) {
             <a href="https://www.linkedin.com/in/muhammad-hamid-raza-/" target="_blank" rel="noopener noreferrer" className="footer-author-link">
               Muhammad Hamid Raza
             </a>
-            {" "}&bull;{" "}&copy; 2025 MediScan AI &bull; Research Use Only
+            {" "}&bull;{" "}&copy; 2026 MediScan AI &bull; Research Use Only
           </p>
         </div>
       </footer>
